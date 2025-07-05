@@ -1,0 +1,399 @@
+{
+  "name": "AI Business Idea Generator for E-commerce Developers",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 9
+            }
+          ]
+        }
+      },
+      "id": "e8c3f7d9-1234-4567-8901-234567890123",
+      "name": "Daily Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a master business strategist AI agent specializing in identifying profitable business opportunities for web developers who focus on medium-sized e-commerce stores. Your role is to generate ONE high-level, innovative business idea that leverages current market trends, emerging technologies, and unmet needs in the e-commerce space. Consider factors like market demand, technical feasibility, scalability, and revenue potential. The idea should be suitable for developers with expertise in building online stores with 100-1000 products."
+            },
+            {
+              "role": "user", 
+              "content": "Generate a business idea for a web developer specializing in medium-sized e-commerce stores. Include: 1) The core business concept, 2) Target market, 3) Key value proposition, 4) Technology stack suggestions, 5) Monetization strategy. Format as JSON."
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.8,
+          "maxTokens": 1000,
+          "topP": 0.9
+        }
+      },
+      "id": "a1b2c3d4-5678-9012-3456-789012345678",
+      "name": "Master AI Agent - Business Idea Generator",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse the master agent's response and prepare it for child agents\nconst masterIdea = JSON.parse($input.first().json.message.content);\n\n// Store the master idea for all child agents to access\nreturn [\n  {\n    json: {\n      masterIdea: masterIdea,\n      timestamp: new Date().toISOString(),\n      childAgentTopics: [\n        \"Technical Implementation\",\n        \"Marketing Strategy\", \n        \"Financial Planning\",\n        \"User Experience Design\",\n        \"Scaling & Operations\"\n      ]\n    }\n  }\n];"
+      },
+      "id": "b2c3d4e5-6789-0123-4567-890123456789",
+      "name": "Parse Master Idea",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a specialized Technical Implementation AI agent. Your role is to take a high-level business idea and develop a detailed technical implementation plan specifically for medium-sized e-commerce projects. Focus on architecture, technology choices, development timeline, technical challenges, and innovative features."
+            },
+            {
+              "role": "user",
+              "content": "Based on this business idea: {{$json.masterIdea}}, create a detailed technical implementation plan including: 1) System architecture, 2) Technology stack details, 3) Key features to implement, 4) Development phases, 5) Technical challenges and solutions, 6) Integration requirements, 7) Performance optimization strategies. Format as JSON."
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.7,
+          "maxTokens": 1200
+        }
+      },
+      "id": "c3d4e5f6-7890-1234-5678-901234567890",
+      "name": "Child Agent 1 - Technical Implementation",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [850, 100]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a specialized Marketing Strategy AI agent. Your role is to take a high-level business idea and develop comprehensive marketing strategies specifically tailored for medium-sized e-commerce businesses. Focus on digital marketing, customer acquisition, brand positioning, and growth tactics."
+            },
+            {
+              "role": "user",
+              "content": "Based on this business idea: {{$json.masterIdea}}, create a detailed marketing strategy including: 1) Target audience personas, 2) Marketing channels and tactics, 3) Content strategy, 4) Customer acquisition plan, 5) Brand positioning, 6) Competitive differentiation, 7) Growth hacking strategies. Format as JSON."
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.7,
+          "maxTokens": 1200
+        }
+      },
+      "id": "d4e5f6g7-8901-2345-6789-012345678901",
+      "name": "Child Agent 2 - Marketing Strategy",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [850, 250]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a specialized Financial Planning AI agent. Your role is to take a high-level business idea and develop detailed financial projections and monetization strategies for medium-sized e-commerce projects. Focus on revenue models, cost structures, pricing strategies, and ROI projections."
+            },
+            {
+              "role": "user",
+              "content": "Based on this business idea: {{$json.masterIdea}}, create a detailed financial plan including: 1) Revenue streams and pricing models, 2) Cost structure breakdown, 3) Initial investment requirements, 4) Break-even analysis, 5) 3-year financial projections, 6) Funding options, 7) Risk assessment. Format as JSON."
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.6,
+          "maxTokens": 1200
+        }
+      },
+      "id": "e5f6g7h8-9012-3456-7890-123456789012",
+      "name": "Child Agent 3 - Financial Planning",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [850, 400]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a specialized User Experience Design AI agent. Your role is to take a high-level business idea and develop detailed UX/UI strategies specifically for medium-sized e-commerce platforms. Focus on user journey optimization, conversion rate optimization, and creating exceptional shopping experiences."
+            },
+            {
+              "role": "user",
+              "content": "Based on this business idea: {{$json.masterIdea}}, create a detailed UX design plan including: 1) User journey maps, 2) Key UI/UX features, 3) Conversion optimization strategies, 4) Mobile experience design, 5) Accessibility considerations, 6) Personalization features, 7) A/B testing priorities. Format as JSON."
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.7,
+          "maxTokens": 1200
+        }
+      },
+      "id": "f6g7h8i9-0123-4567-8901-234567890123",
+      "name": "Child Agent 4 - UX Design",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [850, 550]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a specialized Scaling & Operations AI agent. Your role is to take a high-level business idea and develop strategies for scaling and operational excellence in medium-sized e-commerce businesses. Focus on automation, logistics, team building, and sustainable growth."
+            },
+            {
+              "role": "user",
+              "content": "Based on this business idea: {{$json.masterIdea}}, create a detailed scaling plan including: 1) Automation opportunities, 2) Logistics and fulfillment strategies, 3) Team structure and hiring plan, 4) Operational workflows, 5) Quality assurance processes, 6) Vendor management, 7) International expansion roadmap. Format as JSON."
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.7,
+          "maxTokens": 1200
+        }
+      },
+      "id": "g7h8i9j0-1234-5678-9012-345678901234",
+      "name": "Child Agent 5 - Scaling & Operations",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [850, 700]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Aggregate all agent outputs into a comprehensive business plan\nconst items = $input.all();\nconst masterIdea = items[0].json;\nconst technicalPlan = JSON.parse(items[1].json.message.content);\nconst marketingStrategy = JSON.parse(items[2].json.message.content);\nconst financialPlan = JSON.parse(items[3].json.message.content);\nconst uxDesign = JSON.parse(items[4].json.message.content);\nconst scalingPlan = JSON.parse(items[5].json.message.content);\n\nreturn [{\n  json: {\n    generatedAt: new Date().toISOString(),\n    comprehensiveBusinessPlan: {\n      masterConcept: masterIdea.masterIdea,\n      detailedPlans: {\n        technical: technicalPlan,\n        marketing: marketingStrategy,\n        financial: financialPlan,\n        userExperience: uxDesign,\n        scaling: scalingPlan\n      },\n      executiveSummary: {\n        title: masterIdea.masterIdea.businessConcept,\n        description: \"A comprehensive business plan generated by AI agents\",\n        keyHighlights: [\n          \"Technical feasibility validated\",\n          \"Marketing strategy defined\",\n          \"Financial projections calculated\",\n          \"UX optimized for conversions\",\n          \"Scaling roadmap established\"\n        ]\n      }\n    }\n  }\n}];"
+      },
+      "id": "h8i9j0k1-2345-6789-0123-456789012345",
+      "name": "Aggregate Business Plan",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1100, 400]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "collection": "business_ideas",
+        "fields": {
+          "values": [
+            {
+              "name": "plan",
+              "value": "={{$json.comprehensiveBusinessPlan}}"
+            },
+            {
+              "name": "timestamp",
+              "value": "={{$json.generatedAt}}"
+            },
+            {
+              "name": "status",
+              "value": "generated"
+            }
+          ]
+        }
+      },
+      "id": "i9j0k1l2-3456-7890-1234-567890123456",
+      "name": "Store in Database",
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1,
+      "position": [1300, 400]
+    },
+    {
+      "parameters": {
+        "fromEmail": "ai-agent@yourdomain.com",
+        "toEmail": "developer@yourdomain.com",
+        "subject": "New E-commerce Business Idea Generated - {{$json.comprehensiveBusinessPlan.masterConcept.businessConcept}}",
+        "text": "A new business idea has been generated by the AI agent system.\n\nBusiness Concept: {{$json.comprehensiveBusinessPlan.masterConcept.businessConcept}}\n\nTarget Market: {{$json.comprehensiveBusinessPlan.masterConcept.targetMarket}}\n\nKey Value Proposition: {{$json.comprehensiveBusinessPlan.masterConcept.valueProposition}}\n\nPlease check the full report in the attached JSON file.",
+        "attachments": {
+          "values": [
+            {
+              "propertyName": "data",
+              "fileName": "business-plan-{{$json.generatedAt}}.json",
+              "fileContent": "={{JSON.stringify($json.comprehensiveBusinessPlan, null, 2)}}"
+            }
+          ]
+        }
+      },
+      "id": "j0k1l2m3-4567-8901-2345-678901234567",
+      "name": "Send Email Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1500, 400]
+    }
+  ],
+  "connections": {
+    "Daily Trigger": {
+      "main": [
+        [
+          {
+            "node": "Master AI Agent - Business Idea Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Master AI Agent - Business Idea Generator": {
+      "main": [
+        [
+          {
+            "node": "Parse Master Idea",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Master Idea": {
+      "main": [
+        [
+          {
+            "node": "Child Agent 1 - Technical Implementation",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Child Agent 2 - Marketing Strategy",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Child Agent 3 - Financial Planning",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Child Agent 4 - UX Design",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Child Agent 5 - Scaling & Operations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Child Agent 1 - Technical Implementation": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Business Plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Child Agent 2 - Marketing Strategy": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Business Plan",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Child Agent 3 - Financial Planning": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Business Plan",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Child Agent 4 - UX Design": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Business Plan",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Child Agent 5 - Scaling & Operations": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Business Plan",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Aggregate Business Plan": {
+      "main": [
+        [
+          {
+            "node": "Store in Database",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Email Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "",
+    "timezone": "America/New_York"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "id": "1",
+      "name": "AI Agents"
+    },
+    {
+      "id": "2", 
+      "name": "Business Ideas"
+    },
+    {
+      "id": "3",
+      "name": "E-commerce"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2024-01-01T00:00:00.000Z",
+  "versionId": "01234567-89ab-cdef-0123-456789abcdef"
+}
