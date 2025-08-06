@@ -1,0 +1,14 @@
+flask==3.0.0
+pyyaml==6.0.1
+requests==2.31.0
+twilio==8.10.0
+pyserial==3.5
+python-gsmmodem==0.9
+aiohttp==3.9.1
+asyncio==3.4.3
+python-dotenv==1.0.0
+schedule==1.2.0
+onvif-zeep==0.2.12
+email-validator==2.1.0
+smtplib
+phonenumbers==8.13.26

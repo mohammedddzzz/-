@@ -1,0 +1,152 @@
+# Security Camera Notification Bridge Configuration
+
+# Server Configuration
+server:
+  host: "0.0.0.0"
+  port: 8080
+  webhook_path: "/camera/event"
+  debug: false
+
+# Camera System Configuration
+cameras:
+  # Example: Hikvision Camera
+  - id: "front_door"
+    name: "Front Door Camera"
+    type: "hikvision"
+    ip: "192.168.1.100"
+    username: "admin"
+    password: "password123"
+    events:
+      - motion_detection
+      - line_crossing
+      - intrusion
+    
+  # Example: Dahua Camera  
+  - id: "backyard"
+    name: "Backyard Camera"
+    type: "dahua"
+    ip: "192.168.1.101"
+    username: "admin"
+    password: "password123"
+    events:
+      - motion_detection
+      - video_loss
+      
+  # Example: Generic ONVIF Camera
+  - id: "garage"
+    name: "Garage Camera"
+    type: "onvif"
+    ip: "192.168.1.102"
+    port: 80
+    username: "admin"
+    password: "password123"
+    events:
+      - motion_detection
+
+# SMS Gateway Configuration
+sms_gateway:
+  # Primary method - Local GSM Modem
+  primary:
+    type: "gsm_modem"
+    port: "/dev/ttyUSB0"  # Linux
+    # port: "COM3"        # Windows
+    baudrate: 9600
+    pin: null  # SIM PIN if required
+    
+  # Fallback method - Twilio
+  fallback:
+    type: "twilio"
+    account_sid: "your_twilio_account_sid"
+    auth_token: "your_twilio_auth_token"
+    from_number: "+1234567890"
+    
+  # Alternative - Email to SMS
+  email_to_sms:
+    type: "email"
+    smtp_server: "smtp.gmail.com"
+    smtp_port: 587
+    username: "your_email@gmail.com"
+    password: "your_app_password"
+    carriers:
+      verizon: "@vtext.com"
+      att: "@txt.att.net"
+      tmobile: "@tmomail.net"
+      sprint: "@messaging.sprintpcs.com"
+
+# Notification Settings
+notifications:
+  # Phone numbers to notify
+  recipients:
+    - number: "+1234567890"
+      name: "John Doe"
+      carrier: "verizon"  # For email-to-sms
+      priority: "high"
+      
+    - number: "+0987654321"
+      name: "Jane Smith"
+      carrier: "att"
+      priority: "normal"
+      
+  # Notification rules
+  rules:
+    # Send immediate alert for motion at front door
+    - camera_id: "front_door"
+      event: "motion_detection"
+      action: "immediate"
+      message: "Motion detected at front door!"
+      priority: "high"
+      
+    # Batch notifications for backyard
+    - camera_id: "backyard"
+      event: "motion_detection"
+      action: "batch"
+      batch_window: 300  # 5 minutes
+      message: "Activity detected in backyard"
+      priority: "normal"
+      
+    # Night time alerts
+    - camera_id: "all"
+      event: "motion_detection"
+      time_range: "22:00-06:00"
+      action: "immediate"
+      message: "Night time motion alert!"
+      priority: "high"
+      
+  # Rate limiting
+  rate_limit:
+    max_per_hour: 20
+    max_per_day: 100
+    
+  # Quiet hours (no low priority notifications)
+  quiet_hours:
+    enabled: true
+    start: "22:00"
+    end: "07:00"
+    allow_high_priority: true
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  file: "logs/notification-bridge.log"
+  max_size: "10MB"
+  backup_count: 5
+  
+# Advanced Settings
+advanced:
+  # Retry failed SMS
+  retry_attempts: 3
+  retry_delay: 60  # seconds
+  
+  # Connection timeout
+  timeout: 30
+  
+  # Enable webhook authentication
+  webhook_auth:
+    enabled: false
+    token: "your_secret_token"
+    
+  # Database for event history
+  database:
+    enabled: true
+    type: "sqlite"
+    path: "data/events.db"
